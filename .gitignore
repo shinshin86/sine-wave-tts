@@ -1,0 +1,10 @@
+node_modules/
+dist/
+artifacts/
+demo/dist/
+demo/public/dict/
+*.tsbuildinfo
+
+# Internal working documents (not for publication)
+local-assets/
+.claude/settings.local.json

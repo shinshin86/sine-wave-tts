@@ -1,0 +1,44 @@
+{
+  "name": "sine-wave-tts",
+  "version": "0.1.0",
+  "description": "Deterministic sine-wave text-to-vocalization synthesis",
+  "type": "module",
+  "main": "./dist/src/index.js",
+  "types": "./dist/src/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/src/index.d.ts",
+      "import": "./dist/src/index.js"
+    }
+  },
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "test": "vitest run",
+    "typecheck": "tsc --noEmit -p tsconfig.json",
+    "sample": "npm run build --silent && node dist/scripts/generate-sample.js",
+    "samples": "npm run build --silent && node dist/scripts/generate-emotion-samples.js",
+    "contour-samples": "npm run build --silent && node dist/scripts/generate-contour-samples.js",
+    "preset-samples": "npm run build --silent && node dist/scripts/generate-preset-samples.js",
+    "demo:dict": "node scripts/sync-kuromoji-dict.mjs",
+    "predemo": "npm run demo:dict",
+    "demo": "vite demo",
+    "predemo:build": "npm run demo:dict",
+    "demo:build": "vite build demo"
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "dependencies": {
+    "kuromoji": "^0.1.2"
+  },
+  "devDependencies": {
+    "@types/node": "^24.0.15",
+    "@types/kuromoji": "^0.1.3",
+    "typescript": "^5.8.3",
+    "vite": "^7.0.0",
+    "vitest": "^3.2.4"
+  }
+}
