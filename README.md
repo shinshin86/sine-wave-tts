@@ -4,17 +4,17 @@
 
 A TypeScript library that makes text "speak" in beeping sine-wave tones.
 
-Think of a robot or a video-game character chattering away in electronic beeps.
-Rather than imitating a human voice, it moves pitch and rhythm to follow the
-readings and accents of the input text — you can't make out any words, yet it
-clearly sounds like someone talking. It is designed to be the voice of AI
-characters and mascots that aren't human.
+The result sounds like a robot or a video-game character chattering in
+electronic beeps. Instead of imitating a human voice, the library moves pitch
+and rhythm to follow the readings and accents of the input text. No actual
+words come through, but it still sounds like someone talking. It was built to
+give a voice to AI characters and mascots that aren't human.
 
-- The same text always produces the same sound, so a character's voice stays
-  consistently "theirs"
+- The same text always produces the same sound, so each character keeps a
+  consistent, recognizable voice
 - Understands Japanese readings and accents and reflects them in the sound
   (kuromoji.js, with a built-in lightweight fallback)
-- 5 voice characters × 7 emotions, freely combinable
+- 5 voice characters and 7 emotions that can be combined in any pairing
 - Outputs 44.1 kHz / mono / 16-bit WAV plus per-unit timings for subtitles and lip sync
 - Works in both Node.js and the browser
 
@@ -95,7 +95,7 @@ Loading the analyzer itself is done explicitly with `loadKuromojiAnalyzer()`.
 ## Presets
 
 Speakers define voice character and base rhythm; emotions define expressive
-modulation. The two axes are independent and freely combinable.
+modulation. The two axes are independent, so any speaker works with any emotion.
 
 | Speaker | Character |
 |---|---|

@@ -1,7 +1,7 @@
 {
   "name": "sine-wave-tts",
   "version": "0.1.0",
-  "description": "Makes text speak in beeping sine-wave tones — a voice for robots, AI characters, and mascots that aren't human",
+  "description": "Makes text speak in beeping sine-wave tones. A voice for robots, AI characters, and mascots that aren't human.",
   "type": "module",
   "main": "./dist/src/index.js",
   "types": "./dist/src/index.d.ts",
