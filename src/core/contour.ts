@@ -1,4 +1,4 @@
-import { fnv1a, xorshift32, type MelodyEvent } from "./melodizer.js";
+import { fnv1a, xorshift32, type MelodyEvent } from "./melody.js";
 import type { AccentPhrase, Mora, PhrasePause } from "./analyzer.js";
 import type { SpeakerPreset } from "../presets/speakers.js";
 

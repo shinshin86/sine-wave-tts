@@ -5,6 +5,6 @@ demo/dist/
 demo/public/dict/
 *.tsbuildinfo
 
-# Internal working documents (not for publication)
+# Local working files
 local-assets/
 .claude/settings.local.json

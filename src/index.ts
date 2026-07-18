@@ -1,9 +1,7 @@
-import { analyzeText, loadKuromojiAnalyzer } from "./core/analyzer.js";
+import { analyzeText } from "./core/analyzer.js";
 import { generateContour } from "./core/contour.js";
-import { melodize } from "./core/melodizer.js";
 import { applyProsody, createUnitTimings, type UnitTiming } from "./core/prosody.js";
 import { synthesizePcm } from "./core/synthesizer.js";
-import { tokenize } from "./core/tokenizer.js";
 import { encodeWav } from "./core/wav.js";
 import {
   defaultSpeaker,
@@ -46,7 +44,7 @@ function resolveEmotion(
   return emotion ?? getEmotionPreset("neutral");
 }
 
-/** Synchronously synthesize deterministic neutral vocalization from text. */
+/** Synchronously synthesize deterministic vocalization with any preset. */
 export function synthesize(
   text: string,
   options: SynthesisOptions = {},
@@ -95,7 +93,7 @@ export {
   setLanguageAnalyzer,
 } from "./core/analyzer.js";
 export { generateContour, getAccentPattern } from "./core/contour.js";
-export { melodize, fnv1a, xorshift32 } from "./core/melodizer.js";
+export { fnv1a, xorshift32 } from "./core/melody.js";
 export { applyProsody, createUnitTimings } from "./core/prosody.js";
 export { synthesizePcm } from "./core/synthesizer.js";
 export { tokenize } from "./core/tokenizer.js";
@@ -112,7 +110,7 @@ export {
   supportedEmotions,
   transformAdsr,
 } from "./presets/emotions.js";
-export type { MelodyEvent, MelodizeOptions } from "./core/melodizer.js";
+export type { MelodyEvent } from "./core/melody.js";
 export type {
   AccentPhrase,
   AnalyzedToken,

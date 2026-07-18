@@ -1,4 +1,4 @@
-import type { MelodyEvent } from "./melodizer.js";
+import type { MelodyEvent } from "./melody.js";
 import type {
   AdsrPreset,
   SpeakerPreset,

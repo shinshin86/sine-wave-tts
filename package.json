@@ -22,7 +22,6 @@
     "build": "tsc -p tsconfig.json",
     "test": "vitest run",
     "typecheck": "tsc --noEmit -p tsconfig.json",
-    "sample": "npm run build --silent && node dist/scripts/generate-sample.js",
     "samples": "npm run build --silent && node dist/scripts/generate-emotion-samples.js",
     "contour-samples": "npm run build --silent && node dist/scripts/generate-contour-samples.js",
     "preset-samples": "npm run build --silent && node dist/scripts/generate-preset-samples.js",
