@@ -2,15 +2,19 @@
 
 *Read this in other languages: [日本語](./README.ja.md)*
 
-A TypeScript library that turns text into a deterministic sequence of sine-wave tones.
-Instead of imitating a human voice like conventional speech synthesis, it expresses
-accent phrases, mora timing, emotion, and voice character as an electronic,
-speech-like signal — a "voice" for characters that are not human.
+A TypeScript library that makes text "speak" in beeping sine-wave tones.
 
-- The same text, speaker, and emotion always produce the same PCM / WAV
-- Japanese reading and part-of-speech analysis via kuromoji.js, with a lightweight
-  fallback when the analyzer is not loaded
-- 5 speakers × 7 emotions, freely combinable
+Think of a robot or a video-game character chattering away in electronic beeps.
+Rather than imitating a human voice, it moves pitch and rhythm to follow the
+readings and accents of the input text — you can't make out any words, yet it
+clearly sounds like someone talking. It is designed to be the voice of AI
+characters and mascots that aren't human.
+
+- The same text always produces the same sound, so a character's voice stays
+  consistently "theirs"
+- Understands Japanese readings and accents and reflects them in the sound
+  (kuromoji.js, with a built-in lightweight fallback)
+- 5 voice characters × 7 emotions, freely combinable
 - Outputs 44.1 kHz / mono / 16-bit WAV plus per-unit timings for subtitles and lip sync
 - Works in both Node.js and the browser
 
