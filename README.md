@@ -130,6 +130,57 @@ To build the static production files:
 npm run demo:build
 ```
 
+## HTTP API server
+
+Start the dependency-free Node.js server (default: `127.0.0.1:50021`):
+
+```bash
+npm run serve
+```
+
+Select another port with `PORT=51000 npm run serve` or
+`npm run serve -- --port 51000`. The command-line flag takes precedence.
+The server loads kuromoji before listening and reports whether the analyzer is
+`ready` or using the `fallback`. All routes allow CORS.
+
+### Native API
+
+| Method and path | Response |
+|---|---|
+| `POST /v1/synthesize` | WAV; send `Accept: application/json` for Base64 WAV and timings |
+| `GET /v1/speakers` | Speaker presets and parameter summaries |
+| `GET /v1/emotions` | Emotion presets |
+| `GET /v1/health` | Server and analyzer status |
+
+```bash
+curl -sS -X POST http://127.0.0.1:50021/v1/synthesize \
+  -H 'Content-Type: application/json' \
+  --data '{"text":"こんにちは、APIです。","speaker":"chirpy","emotion":"joy"}' \
+  --output native.wav
+```
+
+### VOICEVOX-compatible API
+
+The compatibility layer exposes `/audio_query`, `/synthesis`, `/speakers`, and
+`/version`. Each speaker × emotion pair is assigned a stable numeric style ID;
+read `/speakers` instead of hard-coding IDs.
+
+```bash
+curl -sS -X POST \
+  'http://127.0.0.1:50021/audio_query?text=こんにちは&speaker=0' \
+  --output query.json
+
+curl -sS -X POST \
+  'http://127.0.0.1:50021/synthesis?speaker=0' \
+  -H 'Content-Type: application/json' \
+  --data-binary @query.json \
+  --output voicevox.wav
+```
+
+`speedScale`, `pitchScale`, and `volumeScale` in the AudioQuery are mapped to
+the native synthesis controls. This is a practical playback-compatible subset,
+not a complete implementation of every VOICEVOX feature.
+
 ## Sample WAVs
 
 ```bash
@@ -163,4 +214,5 @@ npm run typecheck
 npm test
 npm run build
 npm run demo:build
+npm run serve
 ```

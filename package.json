@@ -9,6 +9,10 @@
     ".": {
       "types": "./dist/src/index.d.ts",
       "import": "./dist/src/index.js"
+    },
+    "./server": {
+      "types": "./dist/src/server/index.d.ts",
+      "import": "./dist/src/server/index.js"
     }
   },
   "files": [
@@ -22,6 +26,8 @@
     "samples": "npm run build --silent && node dist/scripts/generate-emotion-samples.js",
     "contour-samples": "npm run build --silent && node dist/scripts/generate-contour-samples.js",
     "preset-samples": "npm run build --silent && node dist/scripts/generate-preset-samples.js",
+    "preserve": "npm run build",
+    "serve": "node dist/src/server/cli.js",
     "demo:dict": "node scripts/sync-kuromoji-dict.mjs",
     "predemo": "npm run demo:dict",
     "demo": "vite demo",

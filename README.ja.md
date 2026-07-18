@@ -127,6 +127,58 @@ npm run demo
 npm run demo:build
 ```
 
+## HTTP APIサーバ
+
+Node.js組み込み機能だけで動くサーバを起動します。既定のアドレスは
+`127.0.0.1:50021` です。
+
+```bash
+npm run serve
+```
+
+ポートは `PORT=51000 npm run serve` または
+`npm run serve -- --port 51000` で変更できます。CLI引数が優先されます。
+サーバはlisten前にkuromojiをロードし、解析器が `ready` か `fallback` かを
+起動ログへ表示します。全ルートでCORSを許可しています。
+
+### ネイティブAPI
+
+| メソッドとパス | レスポンス |
+|---|---|
+| `POST /v1/synthesize` | WAV。`Accept: application/json` ならBase64 WAVとtimings |
+| `GET /v1/speakers` | speaker一覧とパラメータ概要 |
+| `GET /v1/emotions` | emotion一覧 |
+| `GET /v1/health` | サーバと解析器の状態 |
+
+```bash
+curl -sS -X POST http://127.0.0.1:50021/v1/synthesize \
+  -H 'Content-Type: application/json' \
+  --data '{"text":"こんにちは、APIです。","speaker":"chirpy","emotion":"joy"}' \
+  --output native.wav
+```
+
+### VOICEVOX互換API
+
+互換レイヤでは `/audio_query`、`/synthesis`、`/speakers`、`/version` を
+利用できます。speaker × emotion の各組み合わせには決定論的な数値style IDを
+割り当てます。IDを固定値として仮定せず、`/speakers` から取得してください。
+
+```bash
+curl -sS -X POST \
+  'http://127.0.0.1:50021/audio_query?text=こんにちは&speaker=0' \
+  --output query.json
+
+curl -sS -X POST \
+  'http://127.0.0.1:50021/synthesis?speaker=0' \
+  -H 'Content-Type: application/json' \
+  --data-binary @query.json \
+  --output voicevox.wav
+```
+
+AudioQueryの `speedScale`、`pitchScale`、`volumeScale` はnative APIの合成値へ
+写像します。一般的なクライアントでの再生を目的とした実用互換であり、VOICEVOXの
+全機能を再実装するものではありません。
+
 ## 試聴WAV
 
 ```bash
@@ -159,4 +211,5 @@ npm run typecheck
 npm test
 npm run build
 npm run demo:build
+npm run serve
 ```
