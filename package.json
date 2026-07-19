@@ -16,6 +16,14 @@
     }
   },
   "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/shinshin86/sine-wave-tts.git"
+  },
+  "homepage": "https://github.com/shinshin86/sine-wave-tts#readme",
+  "bugs": {
+    "url": "https://github.com/shinshin86/sine-wave-tts/issues"
+  },
   "files": [
     "dist/src"
   ],
