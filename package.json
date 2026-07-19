@@ -22,16 +22,9 @@
     "build": "tsc -p tsconfig.json",
     "test": "vitest run",
     "typecheck": "tsc --noEmit -p tsconfig.json",
-    "samples": "npm run build --silent && node dist/scripts/generate-emotion-samples.js",
-    "contour-samples": "npm run build --silent && node dist/scripts/generate-contour-samples.js",
-    "preset-samples": "npm run build --silent && node dist/scripts/generate-preset-samples.js",
-    "preserve": "npm run build",
-    "serve": "node dist/src/server/cli.js",
-    "demo:dict": "node scripts/sync-kuromoji-dict.mjs",
-    "predemo": "npm run demo:dict",
-    "demo": "vite demo",
-    "predemo:build": "npm run demo:dict",
-    "demo:build": "vite build demo"
+    "webdemo": "node scripts/sync-kuromoji-dict.mjs && vite demo",
+    "webdemo:build": "node scripts/sync-kuromoji-dict.mjs && vite build demo",
+    "serve": "npm run build --silent && node dist/src/server/cli.js"
   },
   "engines": {
     "node": ">=20"

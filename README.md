@@ -113,10 +113,10 @@ A custom `SpeakerPreset` specifies an ascending frequency scale, `baseTempo`
 in morae per second, harmonics, vibrato, ADSR, and portamento time. Comments
 in the type definitions describe which direction to adjust each parameter.
 
-## Demo
+## Web demo (sample playback)
 
 ```bash
-npm run demo
+npm run webdemo
 ```
 
 Open the printed local URL in your browser. Before startup, the kuromoji
@@ -127,7 +127,7 @@ finishes, the status indicator switches to "Kuromoji analyzer ready".
 To build the static production files:
 
 ```bash
-npm run demo:build
+npm run webdemo:build
 ```
 
 ## HTTP API server
@@ -181,17 +181,6 @@ curl -sS -X POST \
 the native synthesis controls. This is a practical playback-compatible subset,
 not a complete implementation of every VOICEVOX feature.
 
-## Sample WAVs
-
-```bash
-npm run samples          # all emotions
-npm run contour-samples  # greeting vs. emergency sentence
-npm run preset-samples   # 5 speakers + 7 emotions
-```
-
-Output goes to `artifacts/`. `preset-samples` writes into
-`artifacts/presets/speakers/` and `artifacts/presets/emotions/`.
-
 ## Architecture
 
 ```text
@@ -213,6 +202,6 @@ dictionary data.
 npm run typecheck
 npm test
 npm run build
-npm run demo:build
+npm run webdemo:build
 npm run serve
 ```
