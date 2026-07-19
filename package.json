@@ -15,10 +15,12 @@
       "import": "./dist/src/server/index.js"
     }
   },
+  "license": "MIT",
   "files": [
-    "dist"
+    "dist/src"
   ],
   "scripts": {
+    "prepublishOnly": "npm test && npm run build",
     "build": "tsc -p tsconfig.json",
     "test": "vitest run",
     "typecheck": "tsc --noEmit -p tsconfig.json",
