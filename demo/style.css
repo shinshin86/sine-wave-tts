@@ -55,40 +55,16 @@ select {
 .brand {
   display: flex;
   align-items: center;
-  gap: 12px;
 }
 
-.brand-mark {
-  width: 30px;
-  height: 22px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 2px;
-}
-
-.brand-mark i {
+.brand-logo {
   display: block;
-  width: 2px;
-  background: var(--acid);
-  animation: signal 1.2s ease-in-out infinite alternate;
+  width: clamp(190px, 20vw, 230px);
+  height: auto;
+  filter: invert(1) contrast(1.12);
+  mix-blend-mode: screen;
 }
 
-.brand-mark i:nth-child(1),
-.brand-mark i:nth-child(5) { height: 6px; }
-.brand-mark i:nth-child(2),
-.brand-mark i:nth-child(4) { height: 15px; animation-delay: -0.35s; }
-.brand-mark i:nth-child(3) { height: 22px; animation-delay: -0.7s; }
-
-@keyframes signal {
-  to { transform: scaleY(0.4); opacity: 0.55; }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .brand-mark i { animation: none; }
-}
-
-.brand-name,
 .version,
 .eyebrow,
 .console-head,
@@ -96,12 +72,6 @@ select {
 .status-row,
 footer {
   font-family: var(--mono);
-}
-
-.brand-name {
-  font-size: 15px;
-  font-weight: 500;
-  letter-spacing: -0.03em;
 }
 
 .version {

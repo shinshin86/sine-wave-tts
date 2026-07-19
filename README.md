@@ -1,5 +1,9 @@
 # sine-wave-tts
 
+<p align="center">
+  <img src="./assets/brand/sine-wave-tts-logo.png" alt="Sine Wave TTS" width="760">
+</p>
+
 *Read this in other languages: [日本語](./README.ja.md)*
 
 A TypeScript library that makes text "speak" in beeping sine-wave tones.

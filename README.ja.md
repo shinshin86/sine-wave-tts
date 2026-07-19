@@ -1,5 +1,9 @@
 # sine-wave-tts
 
+<p align="center">
+  <img src="./assets/brand/sine-wave-tts-logo.png" alt="Sine Wave TTS" width="760">
+</p>
+
 *他の言語で読む: [English](./README.md)*
 
 テキストを入力すると、サイン波の「ピコピコ音」で喋っているかのような音を生成する

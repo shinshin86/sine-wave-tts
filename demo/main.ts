@@ -11,14 +11,26 @@ import "./style.css";
 const app = document.querySelector<HTMLDivElement>("#app");
 if (!app) throw new Error("#app was not found");
 
+const brandLogoUrl = new URL(
+  "../assets/brand/sine-wave-tts-logo.png",
+  import.meta.url,
+).href;
+const brandMarkUrl = new URL(
+  "../assets/brand/sine-wave-tts-mark.png",
+  import.meta.url,
+).href;
+
+const favicon = document.createElement("link");
+favicon.rel = "icon";
+favicon.type = "image/png";
+favicon.href = brandMarkUrl;
+document.head.append(favicon);
+
 app.innerHTML = `
   <main class="shell">
     <header class="masthead">
-      <div class="brand" aria-label="sine-wave-tts">
-        <span class="brand-mark" aria-hidden="true">
-          <i></i><i></i><i></i><i></i><i></i>
-        </span>
-        <span class="brand-name">sine-wave-tts</span>
+      <div class="brand">
+        <img class="brand-logo" src="${brandLogoUrl}" alt="Sine Wave TTS" />
       </div>
       <span class="version">v0.1 / deterministic</span>
     </header>
