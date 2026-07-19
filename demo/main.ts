@@ -32,12 +32,25 @@ app.innerHTML = `
       <div class="brand">
         <img class="brand-logo" src="${brandLogoUrl}" alt="Sine Wave TTS" />
       </div>
-      <span class="version">v0.1 / deterministic</span>
+      <a
+        class="source-link"
+        href="https://github.com/shinshin86/sine-wave-tts"
+        target="_blank"
+        rel="noopener noreferrer"
+        aria-label="GitHub repository: shinshin86/sine-wave-tts"
+      >
+        <span class="source-label-full">shinshin86/sine-wave-tts</span>
+        <span class="source-label-compact" aria-hidden="true">GitHub</span>
+        <span aria-hidden="true">↗</span>
+      </a>
     </header>
 
     <section class="hero" aria-labelledby="page-title">
       <p class="eyebrow"><span></span> Text to vocalization</p>
-      <h1 id="page-title">言葉を、<br /><em>信号</em>の声に。</h1>
+      <h1 id="page-title">
+        <span class="hero-line">言葉を<em>喋らない</em>、</span><br />
+        <span class="hero-line">音声エンジン。</span>
+      </h1>
       <p class="intro">
         文字列をサイン波の音程列へ変換します。<br />
         同じ言葉からは、いつでも同じ声が生まれます。

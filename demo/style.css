@@ -65,7 +65,7 @@ select {
   mix-blend-mode: screen;
 }
 
-.version,
+.source-link,
 .eyebrow,
 .console-head,
 .field > span,
@@ -74,10 +74,21 @@ footer {
   font-family: var(--mono);
 }
 
-.version {
+.source-link {
   color: var(--muted);
   font-size: 11px;
-  text-transform: uppercase;
+  letter-spacing: 0.025em;
+  text-decoration: none;
+  transition: color 160ms ease;
+}
+
+.source-link:hover,
+.source-link:focus-visible {
+  color: var(--acid);
+}
+
+.source-label-compact {
+  display: none;
 }
 
 .hero {
@@ -116,6 +127,10 @@ h1 {
 h1 em {
   color: var(--acid);
   font-style: normal;
+}
+
+.hero-line {
+  white-space: nowrap;
 }
 
 .intro {
@@ -470,7 +485,7 @@ footer {
   }
 
   h1 {
-    font-size: clamp(48px, 14vw, 70px);
+    font-size: clamp(38px, 12vw, 70px);
   }
 
   .intro {
@@ -492,8 +507,12 @@ footer {
 }
 
 @media (max-width: 480px) {
-  .version {
+  .source-label-full {
     display: none;
+  }
+
+  .source-label-compact {
+    display: inline;
   }
 
   .live-indicator strong {
