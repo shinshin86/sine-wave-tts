@@ -157,6 +157,27 @@ curl -sS -X POST http://127.0.0.1:50021/v1/synthesize \
   --output native.wav
 ```
 
+### OpenAI互換API
+
+OpenAI TTSクライアントから `POST /v1/audio/speech` を利用できます。`model` は
+互換性のため任意の文字列を受理し、合成結果には影響しません。`voice` には
+`chirpy` のようなspeaker名、または `chirpy:joy` のような
+`speaker:emotion` の組を指定できます。利用可能な名前は `GET /v1/speakers` と
+`GET /v1/emotions` から取得できます。
+
+```bash
+curl -sS -X POST http://127.0.0.1:50021/v1/audio/speech \
+  -H 'Authorization: Bearer local' \
+  -H 'Content-Type: application/json' \
+  --data '{"model":"tts-1","input":"こんにちは、OpenAI互換APIです。","voice":"chirpy:joy","speed":1,"response_format":"wav"}' \
+  --output openai.wav
+```
+
+`response_format` の既定値は `wav` で、OpenAIのMP3既定値とは意図的に異なります。
+ほかに `pcm`（44.1 kHz、mono、16-bit little-endianの生PCM）を利用できます。
+MP3、Opus、AAC、FLACには対応せず、OpenAI形式の400エラーを返します。`speed` は
+`0.25`〜`4.0`です。`GET /v1/models` でローカル互換モデルを取得できます。
+
 ### VOICEVOX互換API
 
 互換レイヤでは `/audio_query`、`/synthesis`、`/speakers`、`/version` を

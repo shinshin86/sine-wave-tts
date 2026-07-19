@@ -159,6 +159,28 @@ curl -sS -X POST http://127.0.0.1:50021/v1/synthesize \
   --output native.wav
 ```
 
+### OpenAI-compatible API
+
+OpenAI TTS clients can use `POST /v1/audio/speech`. The `model` string is
+accepted for compatibility and does not change synthesis. `voice` accepts a
+speaker name such as `chirpy` or a `speaker:emotion` pair such as
+`chirpy:joy`. Read the available names from `GET /v1/speakers` and
+`GET /v1/emotions`.
+
+```bash
+curl -sS -X POST http://127.0.0.1:50021/v1/audio/speech \
+  -H 'Authorization: Bearer local' \
+  -H 'Content-Type: application/json' \
+  --data '{"model":"tts-1","input":"こんにちは、OpenAI互換APIです。","voice":"chirpy:joy","speed":1,"response_format":"wav"}' \
+  --output openai.wav
+```
+
+`response_format` defaults to `wav`, intentionally differing from OpenAI's
+MP3 default. The other supported value is `pcm` (raw 44.1 kHz, mono, 16-bit
+little-endian PCM); MP3, Opus, AAC, and FLAC return an OpenAI-shaped 400 error.
+`speed` must be between `0.25` and `4.0`. `GET /v1/models` lists the local
+compatibility model.
+
 ### VOICEVOX-compatible API
 
 The compatibility layer exposes `/audio_query`, `/synthesis`, `/speakers`, and

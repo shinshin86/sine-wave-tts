@@ -5,8 +5,14 @@ import {
   synthesize,
   type SynthesisOptions,
 } from "../index.js";
-import { getEmotionPreset } from "../presets/emotions.js";
-import { getSpeakerPreset } from "../presets/speakers.js";
+import {
+  getEmotionPreset,
+  supportedEmotions,
+} from "../presets/emotions.js";
+import {
+  getSpeakerPreset,
+  supportedSpeakers,
+} from "../presets/speakers.js";
 import {
   findVoiceStyle,
   nativeEmotionList,
@@ -30,6 +36,12 @@ class ApiError extends Error {
 interface NativeSynthesisRequest {
   text: string;
   options: SynthesisOptions;
+}
+
+type OpenAiResponseFormat = "wav" | "pcm";
+
+interface OpenAiSpeechRequest extends NativeSynthesisRequest {
+  responseFormat: OpenAiResponseFormat;
 }
 
 interface SineWaveQueryMetadata {
@@ -57,7 +69,7 @@ function corsHeaders(): Record<string, string> {
   return {
     "Access-Control-Allow-Origin": "*",
     "Access-Control-Allow-Methods": "GET, POST, OPTIONS",
-    "Access-Control-Allow-Headers": "Content-Type, Accept",
+    "Access-Control-Allow-Headers": "Content-Type, Accept, Authorization",
     "Access-Control-Max-Age": "86400",
   };
 }
@@ -81,6 +93,23 @@ function sendWav(response: ServerResponse, wav: ArrayBuffer): void {
   response.writeHead(200, {
     ...corsHeaders(),
     "Content-Type": "audio/wav",
+    "Content-Length": body.byteLength,
+  });
+  response.end(body);
+}
+
+function sendPcm(response: ServerResponse, pcm: Float32Array): void {
+  const body = Buffer.allocUnsafe(pcm.length * 2);
+  for (let index = 0; index < pcm.length; index += 1) {
+    const value = pcm[index];
+    const finite = value === undefined || !Number.isFinite(value) ? 0 : value;
+    const clamped = Math.max(-1, Math.min(1, finite));
+    const integer = clamped < 0 ? clamped * 0x8000 : clamped * 0x7fff;
+    body.writeInt16LE(Math.round(integer), index * 2);
+  }
+  response.writeHead(200, {
+    ...corsHeaders(),
+    "Content-Type": "audio/pcm",
     "Content-Length": body.byteLength,
   });
   response.end(body);
@@ -121,12 +150,12 @@ async function readJson(request: IncomingMessage): Promise<unknown> {
   }
 }
 
-function requiredText(value: unknown): string {
+function requiredText(value: unknown, name = "text"): string {
   if (typeof value !== "string" || value.trim().length === 0) {
-    throw new ApiError(400, '"text" must be a non-empty string');
+    throw new ApiError(400, `"${name}" must be a non-empty string`);
   }
   if (Array.from(value).length > 5_000) {
-    throw new ApiError(400, '"text" must contain at most 5000 characters');
+    throw new ApiError(400, `"${name}" must contain at most 5000 characters`);
   }
   return value;
 }
@@ -188,6 +217,62 @@ function nativeRequest(value: unknown): NativeSynthesisRequest {
   options.pitch = optionalPositiveNumber(value.pitch, "pitch");
   options.volume = optionalVolume(value.volume);
   return { text, options };
+}
+
+function unknownOpenAiVoice(voice: string): ApiError {
+  return new ApiError(
+    400,
+    `Unknown voice "${voice}". Available voices: ${supportedSpeakers.join(", ")}. Speaker and emotion can be combined as "speaker:emotion"; available emotions: ${supportedEmotions.join(", ")}`,
+  );
+}
+
+function openAiSpeechRequest(value: unknown): OpenAiSpeechRequest {
+  if (!isRecord(value)) {
+    throw new ApiError(400, "Request body must be a JSON object");
+  }
+  if (typeof value.model !== "string" || value.model.length === 0) {
+    throw new ApiError(400, '"model" must be a non-empty string');
+  }
+  const text = requiredText(value.input, "input");
+  if (typeof value.voice !== "string" || value.voice.length === 0) {
+    throw new ApiError(400, '"voice" must be a non-empty string');
+  }
+
+  const parts = value.voice.split(":");
+  const speaker = parts[0];
+  const emotion = parts[1] ?? "neutral";
+  if (parts.length > 2 || !speaker || !emotion) {
+    throw unknownOpenAiVoice(value.voice);
+  }
+  try {
+    getSpeakerPreset(speaker);
+    getEmotionPreset(emotion);
+  } catch {
+    throw unknownOpenAiVoice(value.voice);
+  }
+
+  const speed = optionalPositiveNumber(value.speed, "speed");
+  if (speed !== undefined && (speed < 0.25 || speed > 4)) {
+    throw new ApiError(400, '"speed" must be between 0.25 and 4.0');
+  }
+
+  const responseFormat = value.response_format ?? "wav";
+  if (responseFormat !== "wav" && responseFormat !== "pcm") {
+    throw new ApiError(
+      400,
+      'Unsupported "response_format". Specify "wav" or "pcm".',
+    );
+  }
+
+  return {
+    text,
+    options: {
+      speaker,
+      emotion: emotion as SynthesisOptions["emotion"],
+      speed,
+    },
+    responseFormat,
+  };
 }
 
 function styleFromSearch(url: URL): VoiceStyle {
@@ -305,6 +390,34 @@ async function route(request: IncomingMessage, response: ServerResponse): Promis
     return;
   }
 
+  if (url.pathname === "/v1/models") {
+    requireMethod(request, "GET");
+    sendJson(response, 200, {
+      object: "list",
+      data: [
+        {
+          id: "sine-wave-tts",
+          object: "model",
+          created: 0,
+          owned_by: "sine-wave-tts",
+        },
+      ],
+    });
+    return;
+  }
+
+  if (url.pathname === "/v1/audio/speech") {
+    requireMethod(request, "POST");
+    const input = openAiSpeechRequest(await readJson(request));
+    const result = synthesize(input.text, input.options);
+    if (input.responseFormat === "pcm") {
+      sendPcm(response, result.pcm);
+    } else {
+      sendWav(response, result.toWav());
+    }
+    return;
+  }
+
   if (url.pathname === "/v1/synthesize") {
     requireMethod(request, "POST");
     const input = nativeRequest(await readJson(request));
@@ -361,12 +474,32 @@ export function createApiServer() {
         response.end();
         return;
       }
+      const isOpenAiSpeech =
+        new URL(request.url ?? "/", "http://127.0.0.1").pathname ===
+        "/v1/audio/speech";
       if (error instanceof ApiError) {
-        sendJson(response, error.status, { error: error.message });
+        sendJson(
+          response,
+          error.status,
+          isOpenAiSpeech
+            ? {
+                error: {
+                  message: error.message,
+                  type: "invalid_request_error",
+                },
+              }
+            : { error: error.message },
+        );
         return;
       }
       console.error("Unhandled sine-wave-tts server error", error);
-      sendJson(response, 500, { error: "Internal server error" });
+      sendJson(
+        response,
+        500,
+        isOpenAiSpeech
+          ? { error: { message: "Internal server error", type: "server_error" } }
+          : { error: "Internal server error" },
+      );
     });
   });
 }

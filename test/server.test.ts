@@ -30,6 +30,17 @@ async function nativeSynthesis(
   });
 }
 
+async function openAiSpeech(body: object): Promise<Response> {
+  return fetch(`${baseUrl}/v1/audio/speech`, {
+    method: "POST",
+    headers: {
+      Authorization: "Bearer ignored-by-local-server",
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(body),
+  });
+}
+
 beforeAll(async () => {
   const running = await startApiServer({
     port: 0,
@@ -135,6 +146,103 @@ describe("native HTTP API", () => {
     });
     expect(options.status).toBe(204);
     expect(options.headers.get("access-control-allow-origin")).toBe("*");
+  });
+});
+
+describe("OpenAI-compatible API", () => {
+  it("returns deterministic WAV with the default response format", async () => {
+    const request = {
+      model: "tts-1",
+      input: "OpenAI互換APIの決定論を確認します。",
+      voice: "songful:calm",
+      speed: 1.1,
+    };
+    const firstResponse = await openAiSpeech(request);
+    const secondResponse = await openAiSpeech(request);
+    expect(firstResponse.status).toBe(200);
+    expect(firstResponse.headers.get("content-type")).toBe("audio/wav");
+    const first = new Uint8Array(await firstResponse.arrayBuffer());
+    const second = new Uint8Array(await secondResponse.arrayBuffer());
+    expectWav(first);
+    expect(first).toEqual(second);
+  });
+
+  it("returns raw 44.1 kHz mono 16-bit little-endian PCM", async () => {
+    const response = await openAiSpeech({
+      model: "tts-1",
+      input: "PCM形式です。",
+      voice: "robotic",
+      response_format: "pcm",
+    });
+    const bytes = new Uint8Array(await response.arrayBuffer());
+    expect(response.status).toBe(200);
+    expect(response.headers.get("content-type")).toBe("audio/pcm");
+    expect(bytes.byteLength).toBeGreaterThan(0);
+    expect(bytes.byteLength % 2).toBe(0);
+    expect(Buffer.from(bytes.subarray(0, 4)).toString("ascii")).not.toBe(
+      "RIFF",
+    );
+  });
+
+  it("returns OpenAI-shaped errors for unsupported formats and voices", async () => {
+    const unsupportedFormat = await openAiSpeech({
+      model: "tts-1",
+      input: "未対応形式です。",
+      voice: "default",
+      response_format: "mp3",
+    });
+    expect(unsupportedFormat.status).toBe(400);
+    expect(await unsupportedFormat.json()).toEqual({
+      error: {
+        message: 'Unsupported "response_format". Specify "wav" or "pcm".',
+        type: "invalid_request_error",
+      },
+    });
+
+    const unknownVoice = await openAiSpeech({
+      model: "tts-1",
+      input: "未知の声です。",
+      voice: "missing",
+    });
+    expect(unknownVoice.status).toBe(400);
+    const unknownBody = (await unknownVoice.json()) as {
+      error: { message: string; type: string };
+    };
+    expect(unknownBody.error.type).toBe("invalid_request_error");
+    expect(unknownBody.error.message).toContain("Available voices");
+    expect(unknownBody.error.message).toContain("speaker:emotion");
+  });
+
+  it("rejects speed values outside the OpenAI range", async () => {
+    for (const speed of [0.24, 4.01]) {
+      const response = await openAiSpeech({
+        model: "tts-1",
+        input: "速度範囲の確認です。",
+        voice: "default",
+        speed,
+      });
+      expect(response.status).toBe(400);
+      expect(
+        ((await response.json()) as { error: { message: string } }).error
+          .message,
+      ).toContain("0.25 and 4.0");
+    }
+  });
+
+  it("lists its OpenAI-compatible model", async () => {
+    const response = await fetch(`${baseUrl}/v1/models`);
+    expect(response.status).toBe(200);
+    expect(await response.json()).toEqual({
+      object: "list",
+      data: [
+        {
+          id: "sine-wave-tts",
+          object: "model",
+          created: 0,
+          owned_by: "sine-wave-tts",
+        },
+      ],
+    });
   });
 });
 
