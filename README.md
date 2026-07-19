@@ -1,4 +1,4 @@
-# sine-wave-tts
+# Sine Wave TTS
 
 <p align="center">
   <img src="./assets/brand/sine-wave-tts-logo.png" alt="Sine Wave TTS" width="760">
